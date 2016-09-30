@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% from "form_macros.html" import render_field %}
+
+{% block title %}
+    BTT - Annotation App
+{% endblock %}
+
+{% block content %}
+    <body>
+    <h1 style="clear:both">Please Login</h1>
+    <form action="" method="post">
+        {{ form.hidden_tag() }}
+        <table>
+            {{ render_field(form.username, size = 25) }}
+            {{ render_field(form.password, size = 25) }}
+            {{ render_field(form.remember_me) }}
+            {{ render_field(form.submit) }}
+        </table>
+    </form>
+    </body>
+{% endblock %}
+
+{% block sidebar %}
+    <aside>
+        <h3>Authorized Users Only</h3>
+        <p>You must be logged in to perform any actions on this site.</p>
+    </aside>
+{% endblock %}

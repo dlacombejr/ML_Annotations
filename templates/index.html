@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block title %}
+BTT - Annotation App
+{% endblock %}
+
+{% block content %}
+<article class="flashes">
+{% with messages = get_flashed_messages() %}
+    {% if messages %}
+        <ul>
+            {% for message in messages %}
+            <li>{{ message }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+{% endwith %}
+</article>
+    <article>
+        <header>
+            <h1>How to Create new Annotation</h1>
+            <p>Click and drag over the line chart to highlight a new section.  This will populate start and end locations.  Enter the tag for this segment.</p>
+        </header>
+        <section>
+            <h2>{{ title }}</h2>
+            <p>{{ text }}</p>
+        </section>
+        <section>
+            <h2>article section h2</h2>
+            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam sodales urna non odio egestas tempor. Nunc vel vehicula ante. Etiam bibendum iaculis libero, eget molestie nisl pharetra in. In semper consequat est, eu porta velit mollis nec. Curabitur posuere enim eget turpis feugiat tempor. Etiam ullamcorper lorem dapibus velit suscipit ultrices. Proin in est sed erat facilisis pharetra.</p>
+        </section>
+        <footer>
+            <h3>article footer h3</h3>
+            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam sodales urna non odio egestas tempor. Nunc vel vehicula ante. Etiam bibendum iaculis libero, eget molestie nisl pharetra in. In semper consequat est, eu porta velit mollis nec. Curabitur posuere enim eget turpis feugiat tempor.</p>
+        </footer>
+    </article>
+{% endblock %}

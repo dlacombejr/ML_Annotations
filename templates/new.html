@@ -1,0 +1,155 @@
+{% extends "base.html" %}
+{% block title %}
+App - New Annotation
+{% endblock %}
+
+{% block content %}
+    <article class="flashes">
+{% with messages = get_flashed_messages() %}
+    {% if messages %}
+        <ul>
+            {% for message in messages %}
+            <li>{{ message }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+{% endwith %}
+</article>
+<script src={{ url_for('static', filename='js/vendor/plotly-latest.min.js') }}></script>
+    <article>
+        <header>
+            <h1>How to Create new Annotation</h1>
+            <p>Click and drag over the line chart to highlight a new section.  This will populate start and end locations.  Enter the tag for this segment.</p>
+        </header>
+        <section style="margin-left:-30%">
+            <div id="graphic_holder" style="width:800px;height:450px;"></div>
+        </section>
+        <section>
+            <h2>We can make new annotations now!</h2>
+            <p>YESSIR!</p>
+        </section>
+        <section>
+            <h2>article section h2</h2>
+            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam sodales urna non odio egestas tempor. Nunc vel vehicula ante. Etiam bibendum iaculis libero, eget molestie nisl pharetra in. In semper consequat est, eu porta velit mollis nec. Curabitur posuere enim eget turpis feugiat tempor. Etiam ullamcorper lorem dapibus velit suscipit ultrices. Proin in est sed erat facilisis pharetra.</p>
+        </section>
+        <footer>
+            <h3>article footer h3</h3>
+            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam sodales urna non odio egestas tempor. Nunc vel vehicula ante. Etiam bibendum iaculis libero, eget molestie nisl pharetra in. In semper consequat est, eu porta velit mollis nec. Curabitur posuere enim eget turpis feugiat tempor.</p>
+        </footer>
+    </article>
+{% endblock %}
+
+
+{% block sidebar %}
+    <aside>
+        User Select: <br>
+        <select style="color:black;width:100%" id="session_drop_down">
+        </select> <br><br>
+        UserId:<br>
+        <input type="text" name="sessionid" style="width:75%;color:black" id="sessionid_area"/><br>
+        Annotation:<br>
+        <textarea name="annotations" style="width:75%;height:200px;color:black" id="newannotation_area"></textarea>
+        <button type="submit" style="color:black" id="annotationsubmit">Submit</button>
+    </aside>
+    <script type="text/javascript">
+
+    </script>
+    <script type="text/javascript">
+        var currentSessionData;
+        function plotDataVals(data){
+            var container = $('#graphic_holder');
+            container.empty();
+            container.append('<div id="tester" style="width:800px;height:450px;"></div>');
+            currentSessionData = data;
+            $('#sessionid_area').val(data.session_id);
+            var graphDiv = document.getElementById('tester');
+            var mainTrace = {
+                x: data.time_stamps,
+                y: data.datavals,
+                type: 'scatter',
+                mode: 'lines',
+                marker: {
+                    color: 'darkblue'
+                }
+            };
+
+            var scatterTrace = {
+                x: data.time_stamps,
+                y: data.datavals,
+                type: 'scatter',
+                mode: 'markers',
+                marker: {
+                    opacity: 0.25,
+                    color: 'blue'
+                }
+            };
+
+            var options = {
+                title: 'Data Vals for Annotation',
+                dragmode: 'select'
+            };
+
+            Plotly.plot(graphDiv,
+                    [mainTrace, scatterTrace],
+                    options);
+            graphDiv.on('plotly_selected',
+                    function(event_data){
+                        sTagStart = '"tag_start" : "' + event_data.range.x[0].toString() + '"';
+                        sTagEnd = '"tag_end" : "' + event_data.range.x[1].toString() + '"';
+                        sTag = '"tag" : "YOUR_TAG"';
+                        fullTag = ' {' + sTagStart + ',' + sTagEnd + ',' + sTag + '}';
+                        currS = $('#newannotation_area').val();
+                        if(currS) {
+                            $('#newannotation_area').val(currS + "," + fullTag);
+                        }
+                        else
+                        {
+                            $('#newannotation_area').val(fullTag);
+                        }
+                    });
+        }
+
+        function get_datavals(sess_id){
+            $.ajax({
+                url: '/api/datavals',
+                type: 'POST',
+                data: {'sess_id' : sess_id,
+                    'num_points': 5000},
+                success: plotDataVals
+            });
+        }
+
+        function received_session_names(data){
+            sess_drop_down = $('#session_drop_down');
+            data.forEach(function(item) {
+                sess_drop_down.append('<option style="color:black" value="' + item + '">'+ item + '</option>');
+            });
+            $('#sessionid_area').val(data[0]);
+            get_datavals(data[0][0]);
+        }
+
+        function save_annotation(){
+            annotations = '[' + $('#newannotation_area').val() + ']';
+            $.ajax({
+                url: '/api/saveannotation',
+                type: 'POST',
+                headers: {'Content-Type' : 'application/json'},
+                data: JSON.stringify({'sess_id' : $('#sessionid_area').val(),
+                    'annotations': JSON.parse(annotations)}),
+                success: function(data) { alert(data.status); }
+            });
+        }
+
+        function sess_select_changed(){
+            get_datavals($('#session_drop_down').val())
+        }
+        //immediate actions
+        $.ajax({
+            url: '/api/uniquesessions',
+            type: 'GET',
+            success: received_session_names
+        });
+        $('#annotationsubmit').click(save_annotation);
+        $('#session_drop_down').change(sess_select_changed);
+    </script>
+{% endblock %}

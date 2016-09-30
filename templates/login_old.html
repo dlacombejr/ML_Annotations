@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+
+{% block title %}
+    BTT - Annotation App
+{% endblock %}
+
+{% block content %}
+    <body>
+    <h1>Login</h1>
+    <form action="" method="post">
+        {{ form.hidden_tag() }}
+        <article>
+            {% if form.username.errors %}
+            <p>
+                <table>
+                    <tr class = "error">
+                        <td>
+                            <ul>
+                                {% for error in form.username.errors %}
+                                <li>{{ error }}</li>
+                                {% endfor %}
+                            </ul>
+                        </td>
+                    </tr>
+                </table>
+            </p>
+            {% endif %}
+            <p>UserName:    </p>
+            <p>{{ form.username(size = 25) }}</p>
+
+            {% if form.password.errors %}
+            <p>
+                <table>
+                    <tr class = "error">
+                        <td>
+                            <ul>
+                                {% for error in form.password.errors %}
+                                <li>{{ error }}</li>
+                                {% endfor %}
+                            </ul>
+                        </td>
+                    </tr>
+                </table>
+            </p>
+            {% endif %}
+
+            <p>Password:    </p>
+            <p>{{ form.password(size = 25) }}</p>
+            <p><button type="submit">Submit</button></p>
+        </article>
+    </form>
+    </body>
+{% endblock %}
+
+{% block sidebar %}
+    <aside>
+        <h3>Authorized Users Only</h3>
+        <p>You must be logged in to perform any actions on this site.</p>
+    </aside>
+{% endblock %}
